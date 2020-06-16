@@ -12,20 +12,31 @@ except ImportError:
 
 tot_data=[['Name', 'Reg. No', 'Marks', 'Cert_ID', 'Grade']]
 
-# Details from the certificate in a class 
+# Details from the certificate in a class
 class details:
     def __init__(self, name, reg_num, marks, cert_id):
+        """
+        Creates the class for details
+
+        Args:
+            name (str): Name in the certificate
+            reg_num (str): Reg. number
+            marks (int): Marks obtained
+            cert_id (str): Certificate ID generated with the certificate
+        """
         self.name=name
         self.reg_no=reg_num
         self.marks=marks
         self.cert_id=cert_id
         self.grade=grade(self.marks)
+    
     def print_info(self):
         tot_data.append([self.name, self.reg_no, self.marks, self.cert_id, self.grade])
         print(*[self.name, self.reg_no, self.marks, self.cert_id, self.grade])
 
 def grade(marks):
-    """Assigns a grade according to the Marks Obtained
+    """
+    Assigns a grade according to the Marks Obtained
 
     Args:
         marks ([int]): [Marks Obtained from the certificate]
@@ -47,7 +58,8 @@ def grade(marks):
         return 'F'
 
 def extract(path):
-    """converts the PDF to Image file and Performs OCR and extracts the details
+    """
+    converts the PDF to Image file and Performs OCR and extracts the details
 
     Args:
         path (str): Path of the folder containing the pdf files
@@ -65,12 +77,12 @@ def extract(path):
     marks=int([i for i in text_lines if 'consolidated' in i][0].split(' ')[-1][1:3])
     name=[text_lines.index(i) for i in text_lines if 'COMPLETION' in i]
     name, reg_num=text_lines[name[0]+1], text_lines[name[0]+2]
-    
     p1=details(name, reg_num, marks, cert_id)
     p1.print_info()
     
 def files(path):
-    """Gets the list of all the files
+    """
+    Gets the list of all the files
 
     Args:
         path (str): Path to the folder
@@ -85,8 +97,7 @@ def files(path):
     return files_list
 
 def write_to_csv():
-    """Generate csv file.
-    """
+    """Generate csv file."""
     with open('Details.csv', 'w+', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(tot_data)
@@ -95,7 +106,7 @@ if __name__ == '__main__':
     path = input("Path to the folder : ")
     files_lis=files(path)
     for _ in files_lis:
-        #loop over all the files and write them to the csv file. 
+        #loop over all the files and write them to the csv file.
         tot_path= path+'/'+ _
         extract(tot_path)
-    write_to_csv()   
+    write_to_csv()
