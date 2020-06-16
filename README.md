@@ -3,6 +3,7 @@ Extract details from pdf certificate
 
 Run the code in the following sequence:
 
+```
 conda create -n venv python
 conda activate venv
 
@@ -11,5 +12,7 @@ pip3 install -r requirements.txt
 
 python3 main.py
 Give the folder path as input after running last step
+```
 
-##This prints output as Name Reg.no Marks Certificate_ID Grade
+# Output 
+We finally get a csv file as ouput
