@@ -11,7 +11,9 @@ except ImportError:
     import Image
 
 tot_data=[['Name', 'Reg. No', 'Marks', 'Cert_ID', 'Grade']]
-
+check_again=[['Path to File']]
+cert_ID=[]
+duplicate_cert=[['Reg. no', 'Cert_ID']]
 # Details from the certificate in a class
 class details:
     def __init__(self, name, reg_num, marks, cert_id):
@@ -29,10 +31,10 @@ class details:
         self.marks=marks
         self.cert_id=cert_id
         self.grade=grade(self.marks)
-    
-    def print_info(self):
-        tot_data.append([self.name, self.reg_no, self.marks, self.cert_id, self.grade])
-        print(*[self.name, self.reg_no, self.marks, self.cert_id, self.grade])
+        if isDuplicate(self.cert_id):
+            duplicate_cert.append([self.reg_no, self.cert_id])
+        else:
+            tot_data.append([self.name, self.reg_no, self.marks, self.cert_id, self.grade])
 
 def grade(marks):
     """
@@ -57,6 +59,12 @@ def grade(marks):
     else:
         return 'F'
 
+def isDuplicate(cert):
+    if not cert in cert_ID:
+        cert_ID.append(cert)
+        return False
+    return True
+
 def extract(path):
     """
     converts the PDF to Image file and Performs OCR and extracts the details
@@ -72,13 +80,13 @@ def extract(path):
     os.remove(img_path)
     text_lines=[i for i in text.split('\n') if i!='' and i!=" "]
     if text_lines==[]:
+        check_again.append([path])
         return
     cert_id=[i for i in text_lines if 'ID' in i][0].split(':')[1].split(' ')[1]
     marks=int([i for i in text_lines if 'consolidated' in i][0].split(' ')[-1][1:3])
     name=[text_lines.index(i) for i in text_lines if 'COMPLETION' in i]
     name, reg_num=text_lines[name[0]+1], text_lines[name[0]+2]
     p1=details(name, reg_num, marks, cert_id)
-    p1.print_info()
     
 def files(path):
     """
@@ -96,11 +104,11 @@ def files(path):
             files_list.append(filename)
     return files_list
 
-def write_to_csv():
+def write_to_csv(path, data_list):
     """Generate csv file."""
-    with open('Details.csv', 'w+', newline='') as file:
+    with open(path, 'w+', newline='') as file:
         writer = csv.writer(file)
-        writer.writerows(tot_data)
+        writer.writerows(data_list)
 
 if __name__ == '__main__':
     path = input("Path to the folder : ")
@@ -109,4 +117,6 @@ if __name__ == '__main__':
         #loop over all the files and write them to the csv file.
         tot_path= path+'/'+ _
         extract(tot_path)
-    write_to_csv()
+    write_to_csv('Details.csv', tot_data)
+    write_to_csv('Check_again.csv', check_again)
+    write_to_csv('Duplicates.csv', data_list= duplicate_cert)
