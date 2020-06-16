@@ -2,12 +2,15 @@ import os
 import pytesseract
 from pdf2image import convert_from_path
 import uuid
+import csv
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
 
 try:
     from PIL import Image
 except ImportError:
     import Image
+
+tot_data=[['Name', 'Reg. No', 'Marks', 'Cert_ID', 'Grade']]
 
 class details:
     def __init__(self, name, reg_num, marks, cert_id):
@@ -17,6 +20,7 @@ class details:
         self.cert_id=cert_id
         self.grade=grade(self.marks)
     def print_info(self):
+        tot_data.append([self.name, self.reg_no, self.marks, self.cert_id, self.grade])
         print(*[self.name, self.reg_no, self.marks, self.cert_id, self.grade])
 
 def grade(marks):
@@ -49,8 +53,7 @@ def extract(path):
 
     p1=details(name, reg_num, marks, cert_id)
     p1.print_info()
-
-
+    
 def files(path):
     files_list=[]
     for root, dirs, files in os.walk(path):
@@ -58,11 +61,15 @@ def files(path):
             files_list.append(filename)
     return files_list
 
+def write_to_csv():
+    with open('Details.csv', 'w+', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(tot_data)
 
 if __name__ == '__main__':
     path = input()
     files_lis=files(path)
     for _ in files_lis:
         tot_path= path+'/'+ _
-        print(tot_path)
         extract(tot_path)
+    write_to_csv()   
