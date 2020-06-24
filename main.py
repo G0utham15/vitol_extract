@@ -10,13 +10,13 @@ try:
 except ImportError:
     import Image
 
-tot_data=[['Name', 'Reg. No', 'Marks', 'Cert_ID', 'Grade']]
+tot_data=[['Name', 'Reg. No', 'Subject', 'Marks', 'Cert_ID', 'Grade']]
 check_again=[['Path to File']]
 cert_ID=[]
 duplicate_cert=[['Reg. no', 'Cert_ID']]
 # Details from the certificate in a class
 class details:
-    def __init__(self, name, reg_num, marks, cert_id):
+    def __init__(self, name, reg_num, subject, marks, cert_id):
         """
         Creates the class for details
 
@@ -30,11 +30,12 @@ class details:
         self.reg_no=reg_num
         self.marks=marks
         self.cert_id=cert_id
+        self.subject = subject
         self.grade=grade(self.marks)
         if isDuplicate(self.cert_id):
-            duplicate_cert.append([self.reg_no, self.cert_id])
+            duplicate_cert.append([self.reg_no, self.cert_id, self.subject])
         else:
-            tot_data.append([self.name, self.reg_no, self.marks, self.cert_id, self.grade])
+            tot_data.append([self.name, self.reg_no, self.subject, self.marks, self.cert_id, self.grade])
 
 def grade(marks):
     """
@@ -85,9 +86,10 @@ def extract(path):
     cert_id=[i for i in text_lines if 'ID' in i][0].split(':')[1].split(' ')[1]
     marks=int([i for i in text_lines if 'consolidated' in i][0].split(' ')[-1][1:3])
     name=[text_lines.index(i) for i in text_lines if 'COMPLETION' in i]
+    subject = text_lines[name[0]+4]
     name, reg_num=text_lines[name[0]+1], text_lines[name[0]+2]
-    p1=details(name, reg_num, marks, cert_id)
-    
+    p1=details(name, reg_num, subject, marks, cert_id)
+
 def files(path):
     """
     Gets the list of all the files
